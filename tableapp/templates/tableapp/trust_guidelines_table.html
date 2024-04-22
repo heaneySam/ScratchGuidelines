@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load django_tables2 %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Simple search/filter functionality -->
+        <input type="text" class="form-control" placeholder="Search/Filter..." id="searchInput" onkeyup="searchTable()" autofocus>
+        {% render_table table %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+// Define the toggleFavourite function in the global scope
+
+function toggleFavourite(guidelineId) {
+    // Start AJAX call to server to toggle the favourite status of the guideline
+    $.ajax({
+        url: '{% url "add_to_favourites" 0 %}'.replace('0', guidelineId), // Dynamically set the URL to the correct endpoint for the guideline
+        type: 'POST', // Use POST method for updating data
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}' // Include CSRF token for security
+        },
+        success: function(response) {
+            // This function is called if the server responds with a success status
+            console.log("AJAX response received: ", response); // Log the full response
+
+            var btn = $(".favourite-btn[data-id='" + guidelineId + "']"); // Select the correct button based on data-id attribute
+            console.log("Button selected: ", btn); // Log the jQuery selected object
+            console.log("Button text before:", btn.text());
+            console.log("Button classes before:", btn.attr('class'));
+
+            if (response.created) {
+                console.log("Setting to Unfavourite"); // Check if this part executes
+
+                btn.text('Unfavourite'); // Change the button text to 'Unfavourite'
+                btn.removeClass('btn-primary').addClass('btn-warning'); // Change the button color to indicate it's a favourite
+            } else {
+                console.log("Setting to Favourite"); // Check if this part executes
+
+                btn.text('Favourite'); // Change the button text back to 'Favourite'
+                btn.removeClass('btn-warning').addClass('btn-primary'); // Revert the button color to default
+            }
+
+
+
+        },
+        error: function(xhr, status, error) {
+            // This function is called if the server responds with an error status
+            console.error('Error favouriting:', status, error); // Log error information to console
+            alert('Failed to update favourite status. Please try again.'); // Provide feedback to user
+        }
+    });
+}
+
+{#$(".favourite-btn").click(function() {#}
+{#    $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');#}
+{#    var guidelineId = $(this).data('id');#}
+{#    toggleFavourite(guidelineId);#}
+{#});#}
+
+
+
+// Function to get CSRF token from cookies
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+$(document).ready(function() {
+   // Remove any previously attached click handlers from elements with class 'favourite-btn' to prevent duplication
+   $(document).off('click', '.favourite-btn');
+
+   // Attach the event using jQuery for all current and future '.favourite-btn'
+   $(document).on('click', '.favourite-btn', function() {
+       var guidelineId = $(this).data('id');
+       toggleFavourite(guidelineId);
+   });
+});
+
+
+function searchTable() {
+    var input, filter, table, tr, td, i, j, txtValue, cellFound;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementsByTagName("table")[0];
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        cellFound = false;
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cellFound = true;
+                    break;
+                }
+            }
+        }
+        tr[i].style.display = cellFound ? "" : "none";
+    }
+}
+</script>
+{% endblock scripts %}

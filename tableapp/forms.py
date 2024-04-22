@@ -1,9 +1,9 @@
 from django import forms
-from .models import Guideline
+from .models import CustomGuidelines
 
 class GuidelineForm(forms.ModelForm):
     class Meta:
-        model = Guideline
+        model = CustomGuidelines
         fields = ['name', 'description', 'external_url', 'metadata', 'medical_speciality']
 
     def __init__(self, *args, **kwargs):

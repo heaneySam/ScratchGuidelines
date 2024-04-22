@@ -30,7 +30,8 @@ SECRET_KEY = 'django-insecure-of+py8$#o1dnh7-=09=0^d)m6$=2=b49ao_xnv!tx1qenag$$!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1","localhost"] + os.environ.get("ALLOWED_HOSTS", "").split(" ")
-
+LOGIN_REDIRECT_URL = 'trust_guideline_view'  # Adjust the redirect URL to where you want users to go after logging in
+LOGOUT_REDIRECT_URL = 'login'
 
 # Application definition
 

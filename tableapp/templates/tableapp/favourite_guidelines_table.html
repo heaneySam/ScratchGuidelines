@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load django_tables2 %}  <!-- Loading django_tables2 tags to use render_table -->
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        {% if is_authenticated %}
+            <h2>Favourite Guidelines</h2>
+            <!-- Simple search/filter functionality -->
+            <input type="text" class="form-control" placeholder="Search/Filter..." id="searchInput" onkeyup="searchTable()" autofocus>
+            {% render_table table %}
+        {% else %}
+            <p>Please <a href="{% url 'login' %}">login</a> to view this page.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- Ensure jQuery is included -->
+<script>
+function toggleFavourite(guidelineId) {
+    $.ajax({
+        url: '{% url "add_to_favourites" 0 %}'.replace('0', guidelineId),
+        type: 'POST',
+        data: {
+            csrfmiddlewaretoken: getCookie('csrftoken')
+        },
+        success: function(response) {
+            var btn = $("#fav-btn-" + guidelineId);
+            btn.text(response.created ? 'Unfavourite' : 'Favourite');
+            btn.toggleClass('btn-primary btn-warning');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error favouriting:', status, error);
+        }
+    });
+}
+function getCookie(name) {  // Function to get a cookie by name
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+$(document).ready(function() {
+    $('.favourite-btn').on('click', function() {
+        var guidelineId = $(this).data('id');
+        toggleFavourite(guidelineId); // Make sure this is calling the globally defined function
+    });
+});
+
+
+function searchTable() {  // Function to filter/search table
+    var input = document.getElementById("searchInput");
+    var filter = input.value.toUpperCase();
+    var table = document.getElementsByTagName("table")[0];
+    var tr = table.getElementsByTagName("tr");
+
+    for (var i = 1; i < tr.length; i++) {  // Start from 1 to skip the header row
+        var td = tr[i].getElementsByTagName("td");
+        var cellFound = false;
+        for (var j = 0; j < td.length; j++) {
+            if (td[j]) {
+                var txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cellFound = true;
+                    break;
+                }
+            }
+        }
+        tr[i].style.display = cellFound ? "" : "none";
+    }
+}
+</script>
+{% endblock scripts %}
