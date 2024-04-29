@@ -17,32 +17,53 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <!-- Ensure jQuery is included -->
 <script>
-function toggleFavourite(guidelineId) {
-    $.ajax({
-        url: '{% url "add_to_favourites" 0 %}'.replace('0', guidelineId),
-        type: 'POST',
-        data: {
-            csrfmiddlewaretoken: getCookie('csrftoken')
-        },
-        success: function(response) {
-            var btn = $("#fav-btn-" + guidelineId);
-            btn.text(response.created ? 'Unfavourite' : 'Favourite');
-            btn.toggleClass('btn-primary btn-warning');
-        },
-        error: function(xhr, status, error) {
-            console.error('Error favouriting:', status, error);
-        }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Add click event listeners to all unfavourite buttons
+        document.querySelectorAll('.unfavourite-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const guidelineId = this.getAttribute('data-id');
+                unfavouriteGuideline(guidelineId, this);
+            });
+        });
     });
-}
-function getCookie(name) {  // Function to get a cookie by name
-    let cookieValue = null;
+
+    function unfavouriteGuideline(guidelineId, buttonElement) {
+
+        var urlTemplate = `{% url 'unfavourite_guideline' '999' %}`;
+        var fetchUrl = urlTemplate.replace('999', guidelineId);
+
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // Assumes you have a getCookie function defined
+            },
+            body: JSON.stringify({'guidelineId': guidelineId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'ok') {
+                // Assuming you want to remove the row of the unfavourited guideline
+                buttonElement.closest('tr').remove();
+            } else {
+                // Handle error
+                alert('Could not unfavourite the guideline. Please try again.');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Function to get CSRF token from cookies
+function getCookie(name) {
+    var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith(name + '=')) {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
             }
@@ -51,12 +72,6 @@ function getCookie(name) {  // Function to get a cookie by name
     return cookieValue;
 }
 
-$(document).ready(function() {
-    $('.favourite-btn').on('click', function() {
-        var guidelineId = $(this).data('id');
-        toggleFavourite(guidelineId); // Make sure this is calling the globally defined function
-    });
-});
 
 
 function searchTable() {  // Function to filter/search table

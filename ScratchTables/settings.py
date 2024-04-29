@@ -30,8 +30,11 @@ SECRET_KEY = 'django-insecure-of+py8$#o1dnh7-=09=0^d)m6$=2=b49ao_xnv!tx1qenag$$!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1","localhost"] + os.environ.get("ALLOWED_HOSTS", "").split(" ")
+LOGIN_URL = 'account_login'
+
 LOGIN_REDIRECT_URL = 'trust_guideline_view'  # Adjust the redirect URL to where you want users to go after logging in
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'account_login'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
 # Application definition
 
@@ -44,6 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tableapp.apps.TableappConfig',
     'django_tables2',
+    'allauth',
+    'allauth.account',
+
 ]
 
 MIDDLEWARE = [
@@ -52,11 +58,27 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',  # Add this line
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'ScratchTables.urls'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+
+SITE_ID = 1
+
+# Custom allauth settings
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # Can be 'mandatory', 'optional', or 'none'
+
+
 
 TEMPLATES = [
     {
@@ -88,7 +110,7 @@ DATABASES = {
     }
 }
 
-database_url = os.environ.get("DATABASE_URL", "postgres://guidelines_django_render_user:vXu4CwuHMfsmi1ynPi2js4NXh4LR9zkO@dpg-co183lmd3nmc73cljcv0-a.frankfurt-postgres.render.com/guidelines_django_render")
+database_url = os.environ.get("DATABASE_URL", "postgres://scratch_guidelines_user:8NenjYLvpkzeZ15ikSZz39bUsBmCx0nc@dpg-conuitsf7o1s73fsmdn0-a.frankfurt-postgres.render.com/scratch_guidelines")
 DATABASES["default"] = dj_database_url.parse(database_url)
 
 

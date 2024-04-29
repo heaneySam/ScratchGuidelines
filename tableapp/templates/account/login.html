@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Login</h2>
+<p>If you have not created an account yet, then please <a href="/accounts/signup/">sign up</a> first.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+{% if form.non_field_errors %}
+    <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+    </div>
+{% endif %}
+{% endblock %}

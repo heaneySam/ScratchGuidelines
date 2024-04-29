@@ -69,9 +69,17 @@ class FavouriteGuidelineTable(tables.Table):
     medical_speciality = tables.Column(orderable=True, verbose_name='Speciality', accessor='guideline.medical_speciality')
     unfavourite = tables.Column(empty_values=(), orderable=False, verbose_name='Unfavourite')
 
-    def render_unfavourite(self, record):
+    def render_name(self, record):
+        if record.guideline.external_url:
+            return format_html('<a href="{}" target="_blank">{}</a>', record.guideline.external_url, record.guideline.name)
+        return record.guideline.name  # Return just the name if there is no URL
 
-        return format_html('<button class="btn btn-danger btn-sm" data-id="{}">Unfavourite</button>', record.guideline.id)
+    def render_unfavourite(self, record):
+        # Corrected the quotation marks around class attribute and data-id attribute
+        return format_html(
+            '<button class="btn btn-danger btn-sm unfavourite-btn" data-id="{}">Unfavourite</button>',
+            record.guideline.id
+        )
 
     class Meta:
         model = FavouriteGuideline

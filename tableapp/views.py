@@ -32,7 +32,7 @@ def favourite_guideline(request, pk):
 def unfavourite_guideline(request, pk):
     guideline = get_object_or_404(TrustGuideline, pk=pk)
     FavouriteGuideline.objects.filter(user=request.user, guideline=guideline).delete()
-    return redirect('trust_guideline_view')
+    return JsonResponse({'status': 'ok'})
 
 
 def trust_guideline_view(request):
