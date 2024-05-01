@@ -11,12 +11,12 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
 
-
-class GuidelineTable(tables.Table):
+class CustomGuidelineTable(tables.Table):
     name = tables.Column(orderable=True, verbose_name='Name')
     description = tables.Column(orderable=True, verbose_name='Description')
     selection = tables.CheckBoxColumn(accessor="pk", attrs={"th__input": {"onclick": "toggleAll(this)"}})
-    delete = tables.LinkColumn('guideline_delete', args=[A('pk')], orderable=False, text='Delete', attrs={"a": {"class": "btn btn-danger btn-sm"}})
+    delete = tables.LinkColumn('guideline_delete', args=[A('pk')], orderable=False, text='Delete',
+                               attrs={"a": {"class": "btn btn-danger btn-sm"}})
 
     def render_name(self, record):
         if record.external_url:
@@ -29,12 +29,12 @@ class GuidelineTable(tables.Table):
         fields = ("selection", "name", "description", "delete")  # Specify which fields to display
         attrs = {"class": "table table-striped table-hover"}
 
+
 class TrustGuidelineTable(tables.Table):
     name = tables.Column(orderable=True, verbose_name='Name')
     description = tables.Column(orderable=True, verbose_name='Description')
     medical_speciality = tables.Column(orderable=True, verbose_name='Speciality')
     favourite = tables.Column(empty_values=(), orderable=False, verbose_name='Favourite')
-
 
     def render_name(self, record):
         if record.external_url:
@@ -58,20 +58,21 @@ class TrustGuidelineTable(tables.Table):
     class Meta:
         model = TrustGuideline
         template_name = "django_tables2/bootstrap.html"
-        fields = ("name", "description","medical_speciality", "favourite")  # Add other fields here if needed
+        fields = ("name", "description", "medical_speciality", "favourite")  # Add other fields here if needed
         attrs = {"class": "table table-striped table-hover"}
-
 
 
 class FavouriteGuidelineTable(tables.Table):
     name = tables.Column(orderable=True, verbose_name='Name', accessor='guideline.name')
     description = tables.Column(orderable=True, verbose_name='Description', accessor='guideline.description')
-    medical_speciality = tables.Column(orderable=True, verbose_name='Speciality', accessor='guideline.medical_speciality')
+    medical_speciality = tables.Column(orderable=True, verbose_name='Speciality',
+                                       accessor='guideline.medical_speciality')
     unfavourite = tables.Column(empty_values=(), orderable=False, verbose_name='Unfavourite')
 
     def render_name(self, record):
         if record.guideline.external_url:
-            return format_html('<a href="{}" target="_blank">{}</a>', record.guideline.external_url, record.guideline.name)
+            return format_html('<a href="{}" target="_blank">{}</a>', record.guideline.external_url,
+                               record.guideline.name)
         return record.guideline.name  # Return just the name if there is no URL
 
     def render_unfavourite(self, record):

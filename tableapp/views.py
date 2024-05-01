@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django_tables2 import RequestConfig
-from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline
-from .forms import GuidelineForm
-from .tables import GuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
+from django.template.loader import render_to_string
+from django_tables2 import RequestConfig, SingleTableView
+
+from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
+from .forms import GuidelineForm, TrustForm
+from .tables import CustomGuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from .filters import TrustGuidelineFilter
 
 
 @login_required
@@ -29,30 +32,55 @@ def favourite_guideline(request, pk):
     FavouriteGuideline.objects.get_or_create(user=request.user, guideline=guideline)
     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
+
 def unfavourite_guideline(request, pk):
     guideline = get_object_or_404(TrustGuideline, pk=pk)
     FavouriteGuideline.objects.filter(user=request.user, guideline=guideline).delete()
     return JsonResponse({'status': 'ok'})
 
 
-def trust_guideline_view(request):
-    table = TrustGuidelineTable(TrustGuideline.objects.all())
-    RequestConfig(request, paginate={"per_page": 10}).configure(table)
-    context = {
-        'table': table
-    }
-    return render(request, 'tableapp/trust_guidelines_table.html', context)
+
+
+class TrustGuidelineListView(SingleTableView):
+    model = TrustGuideline
+    table_class = TrustGuidelineTable
+    template_name = 'tableapp/trust_guidelines_table.html'
+    filterset_class = TrustGuidelineFilter
+    paginate_by = 10  # You can adjust the number of items per page
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Getting the filtered queryset
+        filtered_qs = self.filterset_class(self.request.GET, queryset=self.get_queryset())
+        table = self.table_class(filtered_qs.qs)
+        RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(table)
+        context['table'] = table  # Add the table to the context
+        context['filter'] = filtered_qs  # Add the filter to the context
+        return context
+
+    def get_queryset(self):
+        # This can be customized to return a more specific queryset if necessary
+        return super().get_queryset()
+
+    def render_to_response(self, context, **response_kwargs):
+        if 'HX-Request' in self.request.headers:
+            # HTMX ajax request; return only the table part
+            return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
+        # Normal request; return the full page
+        return super().render_to_response(context, **response_kwargs)
 
 def delete_guideline(request, pk):
     guideline = CustomGuidelines.objects.get(pk=pk)
     guideline.delete()
     return redirect('guideline_view')
 
+
 def bulk_delete_guidelines(request):
     if request.method == 'POST':
         ids_to_delete = request.POST.getlist('selection')
         CustomGuidelines.objects.filter(id__in=ids_to_delete).delete()
     return redirect('guideline_view')
+
 
 def guideline_view(request):
     if request.method == 'POST':
@@ -63,19 +91,20 @@ def guideline_view(request):
     else:
         form = GuidelineForm()
 
-    table = GuidelineTable(CustomGuidelines.objects.all())
+    table = CustomGuidelineTable(CustomGuidelines.objects.all())
     RequestConfig(request, paginate={"per_page": 10}).configure(table)
 
     context = {
         'form': form,
         'table': table,
-        'is_authenticated':request.user.is_authenticated
+        'is_authenticated': request.user.is_authenticated
     }
     return render(request, 'tableapp/customTable.html', context)
 
 
 # Create your views here.
 from django.shortcuts import render
+
 
 def customTable(request):
     is_authenticated = request.user.is_authenticated

@@ -34,5 +34,89 @@
         "url": "https://rcem.ac.uk/wp-content/uploads/2023/10/RCEM_Best_Practice_Invasive_Procedures_in_the_Emergency_Department.pdf",
         "description": "Invasive Procedures in the Emergency Department (October 2023)",
         "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Providing Patient Information in the Emergency Department",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2023/10/RCEM_Best_Practice_Providing_Information_in_the_Emergency_Department.pdf",
+        "description": "Providing Patient Information in the Emergency Department (October 2023)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Acute Behavioural Disturbance in Emergency Departments",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2023/10/Acute_Behavioural_Disturbance_in_Emergency_Departments_Oct2023_V2.pdf",
+        "description": "Acute Behavioural Disturbance in Emergency Departments (October 2023)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Suspected nitrous oxide toxicity in the ED guidance",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2023/04/Suspected_nitrous_oxide_toxicity_in_Emergency_Departments_v3.pdf",
+        "description": "Suspected nitrous oxide toxicity in the ED guidance – April 2023",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Management of Adolescent/Young Adult Patients in the Emergency Department",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2023/05/Management_of_Adolescent_Young_Adult_Patients_in_EDs_Final.pdf",
+        "description": "Management of Adolescent/Young Adult Patients in the Emergency Department (May 2023)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Management of Investigation Results in the ED",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2023/02/Management_of_Investigation_Results_in_the_ED_Feb-2023.pdf",
+        "description": "Management of Investigation Results in the ED (February 2023)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Coronavirus Infection, Prevention and Control Guidance",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2022/10/RCEM_IPC_guidance_Oct22.pdf",
+        "description": "Coronavirus Infection, Prevention and Control Guidance (October 2022)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Procedural Sedation in the Emergency Department",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2022/08/RCEM_BPC_Procedural_Sedation_Final_Aug_22.pdf",
+        "description": "Procedural Sedation in the Emergency Department (August 2022)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Discharge to General Practice",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2022/10/Discharge_to_General_Practice_Updated_Oct22.pdf",
+        "description": "Discharge to General Practice (October 2022)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Management of Controlled Energy Device Attendances (Taser) 2021",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2021/11/Management_of_Controlled_Energy_Device_Attendances_Taser_2021.pdf",
+        "description": "Management of Controlled Energy Device Attendances (Taser) 2021 (November 2021)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Emergency Department Care",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2021/11/RCEM_Patient_Care_in_the_ED.pdf",
+        "description": "Emergency Department Care (November 2021)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Better Together: Collaborative Working Between Emergency and Critical Care",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2021/10/RCEM_FICM_Better_Together_Framework.pdf",
+        "description": "Better Together: Collaborative Working Between Emergency and Critical Care – A framework for improved collaborative working between Emergency Medicine (EM) and Intensive Care Medicine (ICM) (July 2021)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Management of Pain in Adults",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2021/10/RCEM_BPC_Management_of_Pain_in_Adults_300621.pdf",
+        "description": "Management of Pain in Adults (June 2021)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Ingestion of Super Strong Magnets in Children",
+        "url": "https://rcem.ac.uk/wp-content/uploads/2021/10/RCEM_BPC_Ingestion_of_Super_Strong_Magnets_in_Children_170521.pdf",
+        "description": "Ingestion of Super Strong Magnets in Children (May 2021)",
+        "medical_speciality": "Emergency Medicine"
+    },
+    {
+        "name": "Quality Care for Older People with Urgent and Emergency Care Needs",
+        "url": "https://www.bgs.org.uk/resources/resource-series/silver-book-ii",
+        "description": "'The Silver Book II': Quality Care for Older People with Urgent and Emergency Care Needs (Intercollegiate, February 2021)",
+        "medical_speciality": "Geriatric Emergency Medicine"
     }
 ]

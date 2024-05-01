@@ -30,7 +30,7 @@ class TrustGuideline(models.Model):
     medical_speciality = models.CharField(max_length=255, default='General')
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class UserProfile(models.Model):
