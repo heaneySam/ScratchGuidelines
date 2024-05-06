@@ -1,11 +1,39 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 
 {% block content %}
-<h2>Sign Up</h2>
-    <p>Already have an account? Then please <a href="/accounts/login/">sign in</a>.</p>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
-</form>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center">Sign Up</h2>
+                    <p class="text-center">Already have an account? Then please <a href="/accounts/login/" class="text-decoration-none">sign in</a>.</p>
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div class="col-sm-8">
+                                    {{ field|add_class:"form-control" }}
+                                    {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="text-danger">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

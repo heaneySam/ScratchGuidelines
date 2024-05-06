@@ -45,7 +45,7 @@ class TrustGuidelineTable(tables.Table):
         # Check if the user is authenticated
         if not self.request.user.is_authenticated:
             return mark_safe(
-                '<span>Login to favourite</span>')  # You could also return an empty string or a generic message
+                '<span><a href="/accounts/login/" class="text-decoration-none">Login</a> to favourite</span>')
 
         is_favorited = FavouriteGuideline.objects.filter(user=self.request.user, guideline=record).exists()
         button_text = "Unfavourite" if is_favorited else "Favourite"

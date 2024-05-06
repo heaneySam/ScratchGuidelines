@@ -38,6 +38,9 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 
 # Application definition
 
+DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
