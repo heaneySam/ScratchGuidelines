@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class CustomGuidelines(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=1024)
     description = models.TextField()
-    external_url = models.URLField(max_length=255, blank=True, null=True)  # New field for external URL
+    external_url = models.URLField(max_length=1024, blank=True, null=True)  # New field for external URL
     metadata = models.TextField(default='General')
-    medical_speciality = models.CharField(max_length=255, default='General')
+    medical_speciality = models.CharField(max_length=1024, default='General')
     def __str__(self):
         return self.name
 
@@ -23,9 +23,9 @@ class Trust(models.Model):
 
 class TrustGuideline(models.Model):
     trust = models.ForeignKey(Trust, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=1025)
     description = models.TextField()
-    external_url = models.URLField(max_length=255, blank=True, null=True)  # New field for external URL
+    external_url = models.URLField(max_length=1025, blank=True, null=True)  # New field for external URL
     metadata = models.TextField(default='General')
     medical_speciality = models.CharField(max_length=255, default='General')
 

@@ -9,27 +9,28 @@ from tableapp.models import TrustGuideline, Trust
 
 
 def load_data():
-    # Path to your JSON file
-    file_path = os.path.join(os.path.dirname(__file__), 'Guidelines_Example_Data.json')
-
-    # Load data from JSON
+    file_path = os.path.join(os.path.dirname(__file__), 'All_UHD_Policies.json')
     with open(file_path, 'r') as file:
         guidelines = json.load(file)
 
-    # Assuming you have a default trust or you'll need to create/select a trust
-    default_trust, _ = Trust.objects.get_or_create(name="RCEM Website")
+    default_trust, _ = Trust.objects.get_or_create(name="UHD")
 
     for guideline in guidelines:
-        TrustGuideline.objects.create(
+        obj, created = TrustGuideline.objects.get_or_create(
             trust=default_trust,
-            name=guideline['name'],
-            description=guideline['description'],
-            external_url=guideline['url'],
-            medical_speciality=guideline['medical_speciality']
+            name=guideline['Title'],
+            defaults={
+                'description': guideline['Description'],
+                'external_url': guideline['URL'],
+                'medical_speciality': guideline['Medical Specialty']
+            }
         )
+        if created:
+            print(f"Added new guideline: {guideline['Title']}")
+        else:
+            print(f"Skipped duplicate guideline: {guideline['Title']}")
 
-    print("Data loaded successfully.")
-
+    print("Data loading process completed.")
 
 if __name__ == "__main__":
     load_data()
