@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tableapp.apps.TableappConfig',
     'django_tables2',
+    'widget_tweaks',
     'allauth',
     'allauth.account',
 

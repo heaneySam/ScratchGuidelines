@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
 {% load django_tables2 %}
+{% load widget_tweaks %}
+
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <form hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="submit">
-            {{ filter.form.as_p }}
-            <button type="submit" class="btn btn-primary">Search</button>
-        </form>
+  <h2>Trust's Clinical Guidelines</h2>
 
-    <div id="table-container">
-        {% render_table table %}
-    </div>
-    </div>
+
+<div class="form-group">
+  <div class="input-group">
+    <input type="text" name="search" class="form-control" placeholder="Search guidelines..." hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="keyup changed delay:200ms">
+  </div>
 </div>
+    <div id="table-container">
+    {% include 'tableapp/partials/trust_guideline_table_partial.html' %}
+  </div>
 {% endblock %}
 
 {% block scripts %}

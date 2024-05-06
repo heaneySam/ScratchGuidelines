@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django_tables2 import RequestConfig, SingleTableView
-
+from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
+from django_filters.views import FilterView
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
 from .forms import GuidelineForm, TrustForm
 from .tables import CustomGuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
@@ -39,35 +39,38 @@ def unfavourite_guideline(request, pk):
     return JsonResponse({'status': 'ok'})
 
 
-
-
-class TrustGuidelineListView(SingleTableView):
+class TrustGuidelineListView(SingleTableMixin, FilterView):
     model = TrustGuideline
     table_class = TrustGuidelineTable
     template_name = 'tableapp/trust_guidelines_table.html'
     filterset_class = TrustGuidelineFilter
-    paginate_by = 10  # You can adjust the number of items per page
+
+    def get_queryset(self):
+        trust_id = self.request.GET.get('trust')
+        if trust_id:
+            return TrustGuideline.objects.filter(trust_id=trust_id)
+        else:
+            default_trust_name = 'UHD'
+            default_trust = Trust.objects.filter(name=default_trust_name).first()
+            if default_trust:
+                return TrustGuideline.objects.filter(trust=default_trust)
+            else:
+                return TrustGuideline.objects.none()
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Getting the filtered queryset
-        filtered_qs = self.filterset_class(self.request.GET, queryset=self.get_queryset())
-        table = self.table_class(filtered_qs.qs)
-        RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(table)
-        context['table'] = table  # Add the table to the context
-        context['filter'] = filtered_qs  # Add the filter to the context
+        context['trusts'] = Trust.objects.all()
+        context['selected_trust'] = self.request.GET.get('trust')
         return context
 
-    def get_queryset(self):
-        # This can be customized to return a more specific queryset if necessary
-        return super().get_queryset()
-
     def render_to_response(self, context, **response_kwargs):
-        if 'HX-Request' in self.request.headers:
-            # HTMX ajax request; return only the table part
+        if self.request.headers.get('HX-Request'):
+            # HTMX request, render only the table partial
             return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
-        # Normal request; return the full page
+        # Regular request, render the full page
         return super().render_to_response(context, **response_kwargs)
+
 
 def delete_guideline(request, pk):
     guideline = CustomGuidelines.objects.get(pk=pk)
