@@ -33,6 +33,7 @@ class CustomGuidelineTable(tables.Table):
 class TrustGuidelineTable(tables.Table):
     name = tables.Column(orderable=True, verbose_name='Name')
     description = tables.Column(orderable=True, verbose_name='Description')
+    locality = tables.Column(orderable=True, verbose_name="Locality")
     medical_speciality = tables.Column(orderable=True, verbose_name='Speciality')
     favourite = tables.Column(empty_values=(), orderable=False, verbose_name='Favourite')
 
@@ -58,7 +59,7 @@ class TrustGuidelineTable(tables.Table):
     class Meta:
         model = TrustGuideline
         template_name = "django_tables2/bootstrap.html"
-        fields = ("name", "description", "medical_speciality", "favourite")  # Add other fields here if needed
+        fields = ("name", "description", "medical_speciality", "locality", "favourite")  # Add other fields here if needed
         attrs = {"class": "table table-striped table-hover"}
 
 
