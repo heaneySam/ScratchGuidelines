@@ -25,9 +25,11 @@ class TrustGuideline(models.Model):
     trust = models.ForeignKey(Trust, on_delete=models.CASCADE)
     name = models.CharField(max_length=1025)
     description = models.TextField()
-    external_url = models.URLField(max_length=1025, blank=True, null=True)  # New field for external URL
+    external_url = models.URLField(max_length=1025, blank=True, null=True)
     metadata = models.TextField(default='General')
     medical_speciality = models.CharField(max_length=255, default='General')
+    locality = models.CharField(max_length=255, default = 'UHD')
+    original_filename = models.CharField(max_length=1025, default = 'null')
 
     def __str__(self):
         return self.name
