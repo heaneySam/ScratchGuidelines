@@ -31,6 +31,7 @@ class TrustGuideline(models.Model):
     locality = models.CharField(max_length=255, default = 'UHD')
     original_filename = models.CharField(max_length=1025, default = 'null')
 
+
     def __str__(self):
         return self.name
 
