@@ -1,5 +1,7 @@
+from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.views import View
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
@@ -57,7 +59,6 @@ class TrustGuidelineListView(SingleTableMixin, FilterView):
             else:
                 return TrustGuideline.objects.none()
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['trusts'] = Trust.objects.all()
@@ -70,6 +71,22 @@ class TrustGuidelineListView(SingleTableMixin, FilterView):
             return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
         # Regular request, render the full page
         return super().render_to_response(context, **response_kwargs)
+
+
+class RedirectAndCountView(View):
+    def get(self, request, pk):
+        guideline = get_object_or_404(TrustGuideline, pk=pk)
+        # Use F() to prevent race conditions
+        print(f"URL: {guideline.external_url}, View Count: {guideline.viewcount}")
+
+        TrustGuideline.objects.filter(pk=pk).update(viewcount=F('viewcount') + 1)
+
+        # Reload the object to get the updated viewcount
+        guideline.refresh_from_db()
+        # Print the URL and the current view count
+        print(f"URL: {guideline.external_url}, View Count: {guideline.viewcount}")
+
+        return redirect(guideline.external_url)
 
 
 def delete_guideline(request, pk):

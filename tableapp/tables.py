@@ -32,14 +32,14 @@ class CustomGuidelineTable(tables.Table):
 
 class TrustGuidelineTable(tables.Table):
     name = tables.Column(orderable=True, verbose_name='Name')
-    description = tables.Column(orderable=True, verbose_name='Description')
     locality = tables.Column(orderable=True, verbose_name="Locality")
     medical_speciality = tables.Column(orderable=True, verbose_name='Speciality')
+    viewcount = tables.Column(orderable=True, verbose_name='View Count')  # Add this line
     favourite = tables.Column(empty_values=(), orderable=False, verbose_name='Favourite')
 
     def render_name(self, record):
         if record.external_url:
-            return format_html('<a href="{}" target="_blank">{}</a>', record.external_url, record.name)
+            return format_html('<a href="/guidelines/view_pdf/{}" target="_blank">{}</a>', record.pk, record.name)
         return record.name  # Return just the name if there is no URL
 
     def render_favourite(self, value, record):
@@ -59,8 +59,10 @@ class TrustGuidelineTable(tables.Table):
     class Meta:
         model = TrustGuideline
         template_name = "django_tables2/bootstrap.html"
-        fields = ("name", "description", "medical_speciality", "locality", "favourite")  # Add other fields here if needed
+
+        fields = ("name", "viewcount", "medical_speciality", "locality", "favourite")  # Add other fields here if needed
         attrs = {"class": "table table-striped table-hover"}
+        order_by = '-viewcount'  # Add this line to sort by viewcount descending
 
 
 class FavouriteGuidelineTable(tables.Table):
@@ -72,8 +74,7 @@ class FavouriteGuidelineTable(tables.Table):
 
     def render_name(self, record):
         if record.guideline.external_url:
-            return format_html('<a href="{}" target="_blank">{}</a>', record.guideline.external_url,
-                               record.guideline.name)
+            return format_html('<a href="{}" target="_blank">{}</a>', record.guideline.external_url, record.guideline.name)
         return record.guideline.name  # Return just the name if there is no URL
 
     def render_unfavourite(self, record):

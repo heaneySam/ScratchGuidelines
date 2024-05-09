@@ -10,5 +10,6 @@ urlpatterns = [
   path('add-to-favourites/<int:pk>/', views.add_to_favourites, name='add_to_favourites'),
   path('unfavourite/<int:pk>/', views.unfavourite_guideline, name='unfavourite_guideline'),
   path('favouriteGuidelines/', views.favourite_guideline_view, name='favourite_guideline_view'),
+  path('guidelines/view_pdf/<int:pk>/', views.RedirectAndCountView.as_view(), name='view_pdf'),
 
 ]
