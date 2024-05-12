@@ -46,6 +46,8 @@ class TrustGuidelineListView(SingleTableMixin, FilterView):
     table_class = TrustGuidelineTable
     template_name = 'tableapp/trust_guidelines_table.html'
     filterset_class = TrustGuidelineFilter
+    paginate_by = 25  # Sets pagination to 30 items per page
+
 
     def get_queryset(self):
         trust_id = self.request.GET.get('trust')
@@ -63,6 +65,8 @@ class TrustGuidelineListView(SingleTableMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['trusts'] = Trust.objects.all()
         context['selected_trust'] = self.request.GET.get('trust')
+        context['filter'] = self.filterset
+
         return context
 
     def render_to_response(self, context, **response_kwargs):
@@ -112,7 +116,7 @@ def guideline_view(request):
         form = GuidelineForm()
 
     table = CustomGuidelineTable(CustomGuidelines.objects.all())
-    RequestConfig(request, paginate={"per_page": 10}).configure(table)
+    RequestConfig(request, paginate={"per_page": 50}).configure(table)
 
     context = {
         'form': form,
