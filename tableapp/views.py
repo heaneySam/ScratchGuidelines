@@ -158,7 +158,7 @@ def favourite_guideline_view(request):
         user_favourites = FavouriteGuideline.objects.none()  # Return an empty queryset for anonymous users
 
     table = FavouriteGuidelineTable(user_favourites, request=request)
-    RequestConfig(request, paginate={"per_page": 10}).configure(table)
+    RequestConfig(request, paginate={"per_page": 20}).configure(table)
     context = {
         'table': table,
         'is_authenticated': request.user.is_authenticated  # Pass authentication status to the template

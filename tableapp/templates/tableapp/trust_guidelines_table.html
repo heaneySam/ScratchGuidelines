@@ -8,36 +8,37 @@
 {% block content %}
   <h2>UHD Trust's Clinical Guidelines</h2>
 
-<div class="container-fluid">
-  <!-- Combined form for search and medical specialties -->
-  <form hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="input delay:200ms, change">
+  <div class="container-fluid">
+    <!-- Combined form for search and medical specialties -->
+    <form hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="input delay:200ms, change">
+      <div class="row mb-3">
 
-    <!-- Row for the search bar across the top -->
-    <div class="row">
-      <div class="col-md-12">
-        <div class="form-group">
-          <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search guidelines...">
+        <!-- Search bar and guidelines table on the right -->
+        <div class="col">
+          <!-- Row for the search bar across the top -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="form-group">
+                <div class="input-group">
+                  <input type="text" name="search" class="form-control custom-search-bar" placeholder="Start typing to search...">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row for medical specialties filter and table -->
+          <div class="row">
+            <!-- Table to display the guidelines -->
+            <div class="col-12">
+              <div id="table-container">
+                {% include 'tableapp/partials/trust_guideline_table_partial.html' %}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Row for medical specialties filter and table -->
-    <div class="row">
-      <!-- Medical specialties filter on the left -->
-
-
-      <!-- Table to display the guidelines on the right -->
-      <div class="col-md-12"> <!-- Adjusted to take up the remaining 85% of the width -->
-        <div id="table-container">
-          {% include 'tableapp/partials/trust_guideline_table_partial.html' %}
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-
+    </form>
+  </div>
 {% endblock %}
 
 {% block scripts %}
