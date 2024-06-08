@@ -1,9 +1,14 @@
 from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+<<<<<<< Updated upstream
 from django.views import View
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
+=======
+from django_tables2 import RequestConfig, SingleTableView
+
+>>>>>>> Stashed changes
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
 from .forms import GuidelineForm, TrustForm
 from .tables import CustomGuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
@@ -41,11 +46,16 @@ def unfavourite_guideline(request, pk):
     return JsonResponse({'status': 'ok'})
 
 
-class TrustGuidelineListView(SingleTableMixin, FilterView):
+
+
+class TrustGuidelineListView(SingleTableView):
     model = TrustGuideline
     table_class = TrustGuidelineTable
     template_name = 'tableapp/trust_guidelines_table.html'
     filterset_class = TrustGuidelineFilter
+<<<<<<< Updated upstream
+    paginate_by = 25  # Sets pagination to 30 items per page
+
 
     def get_queryset(self):
         trust_id = self.request.GET.get('trust')
@@ -63,15 +73,32 @@ class TrustGuidelineListView(SingleTableMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['trusts'] = Trust.objects.all()
         context['selected_trust'] = self.request.GET.get('trust')
+        context['filter'] = self.filterset
+
+=======
+    paginate_by = 10  # You can adjust the number of items per page
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Getting the filtered queryset
+        filtered_qs = self.filterset_class(self.request.GET, queryset=self.get_queryset())
+        table = self.table_class(filtered_qs.qs)
+        RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(table)
+        context['table'] = table  # Add the table to the context
+        context['filter'] = filtered_qs  # Add the filter to the context
+>>>>>>> Stashed changes
         return context
 
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.headers.get('HX-Request'):
-            # HTMX request, render only the table partial
-            return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
-        # Regular request, render the full page
-        return super().render_to_response(context, **response_kwargs)
+    def get_queryset(self):
+        # This can be customized to return a more specific queryset if necessary
+        return super().get_queryset()
 
+    def render_to_response(self, context, **response_kwargs):
+        if 'HX-Request' in self.request.headers:
+            # HTMX ajax request; return only the table part
+            return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
+        # Normal request; return the full page
+        return super().render_to_response(context, **response_kwargs)
 
 class RedirectAndCountView(View):
     def get(self, request, pk):
@@ -112,7 +139,7 @@ def guideline_view(request):
         form = GuidelineForm()
 
     table = CustomGuidelineTable(CustomGuidelines.objects.all())
-    RequestConfig(request, paginate={"per_page": 10}).configure(table)
+    RequestConfig(request, paginate={"per_page": 50}).configure(table)
 
     context = {
         'form': form,

@@ -41,6 +41,9 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
 # Application definition
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap5.html"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 
 
 INSTALLED_APPS = [
@@ -52,6 +55,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tableapp.apps.TableappConfig',
     'django_tables2',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'widget_tweaks',
     'allauth',
     'allauth.account',
