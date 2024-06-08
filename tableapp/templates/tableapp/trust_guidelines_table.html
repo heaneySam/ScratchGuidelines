@@ -26,14 +26,10 @@
     <!-- Row for medical specialties filter and table -->
     <div class="row">
       <!-- Medical specialties filter on the left -->
-      <div class="col-md-2"> <!-- Adjusted to take up about 15% of the width -->
-        <div class="form-group">
-          {{ filter.form.medical_speciality|as_crispy_field }}
-        </div>
-      </div>
+
 
       <!-- Table to display the guidelines on the right -->
-      <div class="col-md-10"> <!-- Adjusted to take up the remaining 85% of the width -->
+      <div class="col-md-12"> <!-- Adjusted to take up the remaining 85% of the width -->
         <div id="table-container">
           {% include 'tableapp/partials/trust_guideline_table_partial.html' %}
         </div>
