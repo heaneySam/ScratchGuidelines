@@ -1,14 +1,10 @@
 from django.db.models import F
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-<<<<<<< Updated upstream
 from django.views import View
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
-=======
 from django_tables2 import RequestConfig, SingleTableView
-
->>>>>>> Stashed changes
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
 from .forms import GuidelineForm, TrustForm
 from .tables import CustomGuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
@@ -53,7 +49,6 @@ class TrustGuidelineListView(SingleTableView):
     table_class = TrustGuidelineTable
     template_name = 'tableapp/trust_guidelines_table.html'
     filterset_class = TrustGuidelineFilter
-<<<<<<< Updated upstream
     paginate_by = 25  # Sets pagination to 30 items per page
 
 
@@ -75,7 +70,6 @@ class TrustGuidelineListView(SingleTableView):
         context['selected_trust'] = self.request.GET.get('trust')
         context['filter'] = self.filterset
 
-=======
     paginate_by = 10  # You can adjust the number of items per page
 
     def get_context_data(self, **kwargs):
@@ -86,7 +80,6 @@ class TrustGuidelineListView(SingleTableView):
         RequestConfig(self.request, paginate={"per_page": self.paginate_by}).configure(table)
         context['table'] = table  # Add the table to the context
         context['filter'] = filtered_qs  # Add the filter to the context
->>>>>>> Stashed changes
         return context
 
     def get_queryset(self):

@@ -1,18 +1,18 @@
 from django import forms
 from django.db.models import Q
 import django_filters
-from .models import TrustGuideline
+from django.urls import reverse_lazy
+
+from .models import TrustGuideline, Trust
 from django.db.models import Count
 
 
 class TrustGuidelineFilter(django_filters.FilterSet):
-<<<<<<< Updated upstream
     search = django_filters.CharFilter(method='filter_search', label="Search")
-    medical_speciality = django_filters.MultipleChoiceFilter(
-        choices=TrustGuideline.objects.values_list('medical_speciality', 'medical_speciality').distinct(),
-        widget=forms.CheckboxSelectMultiple
-    )
-=======
+    # medical_speciality = django_filters.MultipleChoiceFilter(
+    #     choices=TrustGuideline.objects.values_list('medical_speciality', 'medical_speciality').distinct(),
+    #     widget=forms.CheckboxSelectMultiple
+    # )
     search = django_filters.CharFilter(method='filter_search', label="Search", widget=forms.TextInput(attrs={
         'hx-trigger': 'keyup changed delay:500ms clear:none from:input',
         'hx-target': '#table-container',  # Make sure this ID matches the container in your HTML
@@ -37,7 +37,6 @@ class TrustGuidelineFilter(django_filters.FilterSet):
             self.queryset = self.queryset.filter(trust=default_trust)
 
 
->>>>>>> Stashed changes
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(
