@@ -70,7 +70,7 @@ class TrustGuidelineListView(SingleTableView):
         context['selected_trust'] = self.request.GET.get('trust')
         context['filter'] = self.filterset
 
-    paginate_by = 10  # You can adjust the number of items per page
+    paginate_by = 40  # You can adjust the number of items per page
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

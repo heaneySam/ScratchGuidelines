@@ -33,6 +33,11 @@ class TrustGuideline(models.Model):
     locality = models.CharField(max_length=255, default='UHD')
     original_filename = models.CharField(max_length=1025, default='null')
     viewcount = models.IntegerField(default=0, db_index=True)  # New field to track views
+    version_number = models.CharField(max_length=255, default='0', db_index=True)  # Changed to CharField
+    authors = models.CharField(max_length=1025, blank=True, null=True)  # New field for authors
+    creation_date = models.CharField(max_length=255, blank=True, null=True)  # New field for creation date
+    review_date = models.CharField(max_length=255, blank=True, null=True)  # New field for review date
+
 
     def __str__(self):
         return self.name
