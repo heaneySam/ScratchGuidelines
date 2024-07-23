@@ -1,5 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
+from .views import TrustGuidelineViewSet
+
+
+router = DefaultRouter()
+router.register(r'trustguidelines', TrustGuidelineViewSet)
 
 urlpatterns = [
   path('', views.TrustGuidelineListView.as_view(), name='trust_guideline_view'),
@@ -11,5 +17,6 @@ urlpatterns = [
   path('unfavourite/<int:pk>/', views.unfavourite_guideline, name='unfavourite_guideline'),
   path('favouriteGuidelines/', views.favourite_guideline_view, name='favourite_guideline_view'),
   path('guidelines/view_pdf/<int:pk>/', views.RedirectAndCountView.as_view(), name='view_pdf'),
+  path('api/', include(router.urls)),
 
 ]

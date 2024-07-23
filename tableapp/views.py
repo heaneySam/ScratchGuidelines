@@ -15,6 +15,13 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .filters import TrustGuidelineFilter
+from rest_framework import viewsets
+from .serializers import TrustGuidelineSerializer
+
+
+class TrustGuidelineViewSet(viewsets.ModelViewSet):
+    queryset = TrustGuideline.objects.all()
+    serializer_class = TrustGuidelineSerializer
 
 
 @login_required
@@ -42,15 +49,12 @@ def unfavourite_guideline(request, pk):
     return JsonResponse({'status': 'ok'})
 
 
-
-
 class TrustGuidelineListView(SingleTableView):
     model = TrustGuideline
     table_class = TrustGuidelineTable
     template_name = 'tableapp/trust_guidelines_table.html'
     filterset_class = TrustGuidelineFilter
     paginate_by = 25  # Sets pagination to 30 items per page
-
 
     def get_queryset(self):
         trust_id = self.request.GET.get('trust')
@@ -92,6 +96,7 @@ class TrustGuidelineListView(SingleTableView):
             return render(self.request, 'tableapp/partials/trust_guideline_table_partial.html', context)
         # Normal request; return the full page
         return super().render_to_response(context, **response_kwargs)
+
 
 class RedirectAndCountView(View):
     def get(self, request, pk):
