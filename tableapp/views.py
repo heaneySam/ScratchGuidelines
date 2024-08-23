@@ -19,6 +19,22 @@ from rest_framework import viewsets
 from .serializers import TrustGuidelineSerializer
 
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def validate_password(request):
+    if request.method == "POST":
+        input_password = request.POST.get('password')
+        correct_password = "asdf"  # Replace with your actual password
+
+        if input_password == correct_password:
+            return JsonResponse({'valid': True})
+        else:
+            return JsonResponse({'valid': False})
+
+    return JsonResponse({'valid': False}, status=400)
+
 class TrustGuidelineViewSet(viewsets.ModelViewSet):
     queryset = TrustGuideline.objects.all()
     serializer_class = TrustGuidelineSerializer
