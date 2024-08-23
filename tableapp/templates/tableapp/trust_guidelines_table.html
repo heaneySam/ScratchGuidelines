@@ -8,7 +8,23 @@
 {% block content %}
   <h2>UHD Trust's Clinical Guidelines</h2>
 
-  <div class="container-fluid">
+  <!-- Login Form Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-container">
+      <h3>Please Login</h3>
+      <form id="login-form" method="POST" action="{% url 'validate_password' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" name="password" class="form-control" id="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <div id="login-error" class="text-danger mt-2" style="display:none;">Incorrect password. Please try again.</div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container-fluid" id="content-container" style="display: none;">
     <!-- Combined form for search and medical specialties -->
     <form hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="input delay:200ms, change">
       <div class="row mb-3">
@@ -47,38 +63,64 @@
   document.addEventListener('DOMContentLoaded', function () {
     console.log('Results element:', document.getElementById('results'));
   });
-</script>
-<script>
-    // Function to toggle favourite status
-    function toggleFavourite(guidelineId) {
-        $.ajax({
-            url: '{% url "add_to_favourites" 0 %}'.replace('0', guidelineId),
-            type: 'POST',
-            data: {
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function(response) {
-                var btn = $(".favourite-btn[data-id='" + guidelineId + "']");
-                if (response.created) {
-                    btn.text('Unfavourite');
-                    btn.removeClass('btn-primary').addClass('btn-warning');
-                } else {
-                    btn.text('Favourite');
-                    btn.removeClass('btn-warning').addClass('btn-primary');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error favouriting:', status, error);
-                alert('Failed to update favourite status. Please try again.');
-            }
-        });
-    }
 
-    $(document).ready(function() {
-        $(document).on('click', '.favourite-btn', function() {
-            var guidelineId = $(this).data('id');
-            toggleFavourite(guidelineId);
-        });
+  // Function to validate the login form
+  $('#login-form').on('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+    var password = $('#password').val();
+
+    $.ajax({
+      url: '{% url "validate_password" %}',
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        password: password,
+      },
+      success: function(response) {
+        if (response.valid) {
+          $('#login-overlay').hide();
+          $('#content-container').show();
+        } else {
+          $('#login-error').show();
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Error logging in:', status, error);
+        alert('Failed to log in. Please try again.');
+      }
     });
+  });
+
+  // Function to toggle favourite status
+  function toggleFavourite(guidelineId) {
+      $.ajax({
+          url: '{% url "add_to_favourites" 0 %}'.replace('0', guidelineId),
+          type: 'POST',
+          data: {
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function(response) {
+              var btn = $(".favourite-btn[data-id='" + guidelineId + "']");
+              if (response.created) {
+                  btn.text('Unfavourite');
+                  btn.removeClass('btn-primary').addClass('btn-warning');
+              } else {
+                  btn.text('Favourite');
+                  btn.removeClass('btn-warning').addClass('btn-primary');
+              }
+          },
+          error: function(xhr, status, error) {
+              console.error('Error favouriting:', status, error);
+              alert('Failed to update favourite status. Please try again.');
+          }
+      });
+  }
+
+  $(document).ready(function() {
+      $(document).on('click', '.favourite-btn', function() {
+          var guidelineId = $(this).data('id');
+          toggleFavourite(guidelineId);
+      });
+  });
 </script>
 {% endblock scripts %}
