@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
 import dj_database_url
-from django.contrib import staticfiles
 from dotenv import load_dotenv
 
 import os
@@ -92,7 +90,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.TokenAuthentication',
-        'tableapp.authentication.SimpleAPIKeyAuthentication',
+        'tableapp.authentication.APIKeyAuthentication',
 
         # 'rest_framework.authentication.SessionAuthentication',  # Optional
     ],
