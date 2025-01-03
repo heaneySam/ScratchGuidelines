@@ -20,5 +20,4 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
 
         # Optionally, associate the API key with a user or return a dummy user
         # For simplicity, we'll return an anonymous user
-        from django.contrib.auth.models import AnonymousUser
-        return (AnonymousUser(), None)
+        return (None, None)
