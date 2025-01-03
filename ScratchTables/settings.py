@@ -82,8 +82,6 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'allauth',
     'allauth.account',
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
 
     'storages',
 ]
@@ -94,7 +92,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # Optional
+        # 'rest_framework.authentication.SessionAuthentication',  # Optional
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
