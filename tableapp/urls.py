@@ -1,7 +1,9 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import TrustGuidelineViewSet
+from .views import TrustGuidelineViewSet, TestAPI, TrustGuidelineListAPIView  # Import TestAPI
+
+
 
 
 router = DefaultRouter()
@@ -19,6 +21,10 @@ urlpatterns = [
   path('unfavourite/<int:pk>/', views.unfavourite_guideline, name='unfavourite_guideline'),
   path('favouriteGuidelines/', views.favourite_guideline_view, name='favourite_guideline_view'),
   path('guidelines/view_pdf/<int:pk>/', views.RedirectAndCountView.as_view(), name='view_pdf'),
+  path('api/test/', TestAPI.as_view(), name='test-api'),  # Add this line
   path('api/', include(router.urls)),
+  path('api/trust-guidelines/', TrustGuidelineListAPIView.as_view(), name='trust_guideline_list'),
+
+
 
 ]

@@ -16,8 +16,17 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+
 from .filters import TrustGuidelineFilter
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, generics
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.response import Response
@@ -49,11 +58,31 @@ from django.views.decorators.csrf import csrf_exempt
 # Configure logger
 logger = logging.getLogger(__name__)
 
+class TestAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"success": True})
+
+
+
+
+class TrustGuidelineListAPIView(generics.ListAPIView):
+    """
+    API endpoint that allows TrustGuidelines to be viewed.
+    """
+    queryset = TrustGuideline.objects.all().order_by('-viewcount')  # Adjust ordering as needed
+    serializer_class = TrustGuidelineSerializer
+    permission_classes = [IsAuthenticated]
+
 class TrustGuidelineViewSet(viewsets.ModelViewSet):
     queryset = TrustGuideline.objects.all()
     serializer_class = TrustGuidelineSerializer
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['medical_speciality', 'locality']  # Add fields you want to filter by
 
     def perform_update(self, serializer):
         instance = self.get_object()

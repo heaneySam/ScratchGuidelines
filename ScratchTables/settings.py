@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
+from datetime import timedelta
 
 import os
 
@@ -70,11 +71,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'corsheaders',
     'tableapp.apps.TableappConfig',
     'django_tables2',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'crispy_forms',
     'crispy_bootstrap5',
     'widget_tweaks',
@@ -88,6 +90,11 @@ INSTALLED_APPS = [
 
 
 REST_FRAMEWORK = {
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,  # Adjust as needed
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.TokenAuthentication',
         'tableapp.authentication.APIKeyAuthentication',
@@ -99,8 +106,18 @@ REST_FRAMEWORK = {
     ],
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    # Add other settings as needed
+}
+
+
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -118,6 +135,30 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:24069",  # Replace with your Flutter app's URL
+#     "http://localhost:28469",
+#     "http://127.0.0.1:8000",
+#     # Add other origins as needed
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-api-key',  # Your custom header
+]
 
 
 # Custom allauth settings

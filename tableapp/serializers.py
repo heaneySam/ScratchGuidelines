@@ -1,25 +1,41 @@
-# serializers.py
+# tableapp/serializers.py
 
 from rest_framework import serializers
-from .models import TrustGuideline
+from .models import TrustGuideline, Trust
+
+class TrustSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trust
+        fields = ['id', 'name']  # Include other Trust fields if necessary
 
 class TrustGuidelineSerializer(serializers.ModelSerializer):
+    trust = TrustSerializer(read_only=True)
+    pdf_file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = TrustGuideline
-        fields = '__all__'
+        fields = [
+            'id',
+            'trust',
+            'name',
+            'description',
+            'external_url',
+            'metadata',
+            'medical_speciality',
+            'locality',
+            'original_filename',
+            'viewcount',
+            'version_number',
+            'authors',
+            'creation_date',
+            'review_date',
+            'pdf_file',
+            'pdf_file_url',
+        ]
+        read_only_fields = ['viewcount']  # If viewcount is managed server-side
 
-    def validate_pdf_file(self, value):
-        """
-        Validate that the uploaded file does not exceed the maximum allowed size.
-        """
-        if value:
-            # Remove file type validation by commenting out or deleting the following lines:
-            # if not value.name.lower().endswith('.pdf'):
-            #     raise serializers.ValidationError("Only PDF files are allowed.")
-
-            # Increase file size limit (e.g., to 50MB)
-            max_size = 50 * 1024 * 1024  # 50MB
-            if value.size > max_size:
-                raise serializers.ValidationError("File size must be under 50MB.")
-
-        return value
+    def get_pdf_file_url(self, obj):
+        request = self.context.get('request')
+        if obj.pdf_file and hasattr(obj.pdf_file, 'url'):
+            return request.build_absolute_uri(obj.pdf_file.url)
+        return None
