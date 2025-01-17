@@ -7,6 +7,7 @@ from .views import (
     TrustGuidelineListAPIView,
     TrustGuidelineAllAPIView,
     TrustGuidelineAllMinimalAPIView,
+    TrustGuidelineUploadPDFView
 )
 
 router = DefaultRouter()
@@ -30,5 +31,6 @@ urlpatterns = [
     path('api/trust-guidelines/all-minimal/', TrustGuidelineAllMinimalAPIView.as_view(), name='trust_guideline_all_minimal'),
     path('api/trust-guidelines/<int:pk>/', views.TrustGuidelineRetrieveAPIView.as_view(), name='trust_guideline_retrieve'),
     path('api/trust-guidelines/<int:pk>/update/', views.TrustGuidelineUpdateAPIView.as_view(), name='trust_guideline_update'),
-
+    path('api/trust-guidelines/<int:pk>/upload-pdf/', TrustGuidelineUploadPDFView.as_view(), name='trust_guideline_upload_pdf'),
+    path('api/trust-guidelines/create/', views.TrustGuidelineCreateAPIView.as_view(), name='trust_guideline_create'),
 ]
