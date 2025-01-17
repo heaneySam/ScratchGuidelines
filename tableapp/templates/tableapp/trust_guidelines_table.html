@@ -8,23 +8,8 @@
 {% block content %}
   <h2>UHD Trust's Clinical Guidelines</h2>
 
-  <!-- Login Form Overlay -->
-  <div id="login-overlay" class="login-overlay">
-    <div class="login-container">
-      <h3>Please Login</h3>
-      <form id="login-form" method="POST" action="{% url 'validate_password' %}">
-        {% csrf_token %}
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input type="password" name="password" class="form-control" id="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-        <div id="login-error" class="text-danger mt-2" style="display:none;">Incorrect password. Please try again.</div>
-      </form>
-    </div>
-  </div>
 
-  <div class="container-fluid" id="content-container" style="display: none;">
+  <div class="container-fluid" id="content-container">
     <!-- Combined form for search and medical specialties -->
     <form hx-get="{% url 'trust_guideline_view' %}" hx-target="#table-container" hx-trigger="input delay:200ms, change">
       <div class="row mb-3">
@@ -65,31 +50,6 @@
   });
 
   // Function to validate the login form
-  $('#login-form').on('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-    var password = $('#password').val();
-
-    $.ajax({
-      url: '{% url "validate_password" %}',
-      type: 'POST',
-      data: {
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        password: password,
-      },
-      success: function(response) {
-        if (response.valid) {
-          $('#login-overlay').hide();
-          $('#content-container').show();
-        } else {
-          $('#login-error').show();
-        }
-      },
-      error: function(xhr, status, error) {
-        console.error('Error logging in:', status, error);
-        alert('Failed to log in. Please try again.');
-      }
-    });
-  });
 
   // Function to toggle favourite status
   function toggleFavourite(guidelineId) {

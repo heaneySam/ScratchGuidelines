@@ -5,6 +5,8 @@ from django.views import View
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
 from django_tables2 import RequestConfig, SingleTableView
+
+from .authentication import APIKeyAuthentication
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
 from .forms import GuidelineForm, TrustForm
 from .tables import CustomGuidelineTable, TrustGuidelineTable, FavouriteGuidelineTable
@@ -14,30 +16,140 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+
 from .filters import TrustGuidelineFilter
-from rest_framework import viewsets
-from .serializers import TrustGuidelineSerializer
+from rest_framework import viewsets, permissions, status, generics
+from rest_framework.permissions import IsAuthenticated
+
+from rest_framework.response import Response
+from .models import TrustGuideline
+from .serializers import TrustGuidelineSerializer, TrustGuidelineMinimalSerializer
+from django.conf import settings
+import boto3
+from botocore.exceptions import ClientError
+import logging
+
 
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def validate_password(request):
-    if request.method == "POST":
-        input_password = request.POST.get('password')
-        correct_password = "asdf"  # Replace with your actual password
+# @csrf_exempt
+# def validate_password(request):
+#     if request.method == "POST":
+#         input_password = request.POST.get('password')
+#         correct_password = "asdf"  # Replace with your actual password
+#
+#         if input_password == correct_password:
+#             return JsonResponse({'valid': True})
+#         else:
+#             return JsonResponse({'valid': False})
+#
+#     return JsonResponse({'valid': False}, status=400)
 
-        if input_password == correct_password:
-            return JsonResponse({'valid': True})
-        else:
-            return JsonResponse({'valid': False})
+# Configure logger
+logger = logging.getLogger(__name__)
 
-    return JsonResponse({'valid': False}, status=400)
+class TestAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"success": True})
+
+
+
+
+class TrustGuidelineListAPIView(generics.ListAPIView):
+    """
+    API endpoint that allows TrustGuidelines to be viewed.
+    """
+    queryset = TrustGuideline.objects.all().order_by('-viewcount')  # Adjust ordering as needed
+    serializer_class = TrustGuidelineSerializer
+    permission_classes = [IsAuthenticated]
+
+class TrustGuidelineAllMinimalAPIView(generics.ListAPIView):
+    """API endpoint that returns all TrustGuidelines with minimal fields."""
+    queryset = TrustGuideline.objects.all().order_by('-viewcount')
+    serializer_class = TrustGuidelineMinimalSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    pagination_class = None  # Disable pagination for this view
+
+class TrustGuidelineRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    API endpoint that retrieves a single TrustGuideline by its ID.
+    """
+    queryset = TrustGuideline.objects.all()
+    serializer_class = TrustGuidelineSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+class TrustGuidelineUpdateAPIView(generics.UpdateAPIView):
+    """
+    API endpoint that allows updating an existing TrustGuideline.
+    """
+    queryset = TrustGuideline.objects.all()
+    serializer_class = TrustGuidelineSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+class TrustGuidelineAllAPIView(APIView):
+    """API endpoint that returns all TrustGuidelines without pagination."""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        guidelines = TrustGuideline.objects.all().order_by('-viewcount')
+        serializer = TrustGuidelineSerializer(guidelines, many=True)
+        return Response(serializer.data)
+
 
 class TrustGuidelineViewSet(viewsets.ModelViewSet):
     queryset = TrustGuideline.objects.all()
     serializer_class = TrustGuidelineSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['medical_speciality', 'locality']  # Add fields you want to filter by
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        # new_pdf = self.request.FILES.get('pdf_file', None)
+
+        # if new_pdf and instance.pdf_file:
+        #     # Initialize S3 client
+        #     s3_client = boto3.client(
+        #         's3',
+        #         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        #         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        #         region_name=settings.AWS_S3_REGION_NAME,
+        #     )
+
+        #     # Get the old file's S3 key
+        #     old_file_key = instance.pdf_file.name  # This includes the path
+
+        #     try:
+        #         # Delete the old file from S3
+        #         s3_client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=old_file_key)
+        #         logger.debug(f"Deleted old PDF from S3: {old_file_key}")
+        #     except ClientError as e:
+        #         logger.error(f"Failed to delete old PDF from S3: {e}")
+        #         # Optionally, you can choose to raise an exception or handle it as needed
+        #         raise Exception("Failed to delete the old PDF from storage.")
+
+        # # Save the new PDF (this will upload it to S3 via the FileField)
+        # serializer.save()
+        # logger.debug(f"Updated TrustGuideline ID {instance.id} with new PDF.")
 
 
 @login_required

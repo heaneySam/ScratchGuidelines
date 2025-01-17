@@ -38,6 +38,7 @@ class TrustGuideline(models.Model):
     creation_date = models.CharField(max_length=255, blank=True, null=True)  # New field for creation date
     review_date = models.CharField(max_length=255, blank=True, null=True)  # New field for review date
 
+    # pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)
 
     def __str__(self):
         return self.name
