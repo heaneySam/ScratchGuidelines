@@ -20,18 +20,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
-
 from .filters import TrustGuidelineFilter
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.permissions import IsAuthenticated
-
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import TrustGuideline
-from .serializers import TrustGuidelineSerializer, TrustGuidelineMinimalSerializer
+from .serializers import TrustGuidelineSerializer, TrustGuidelineMinimalSerializer, UploadPDFSerializer
 from django.conf import settings
 import boto3
 from botocore.exceptions import ClientError
@@ -92,6 +88,43 @@ class TrustGuidelineRetrieveAPIView(generics.RetrieveAPIView):
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
+class TrustGuidelineUploadPDFView(APIView):
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # Needed for file uploads
+
+    def patch(self, request, pk=None):
+        """
+        PATCH /api/trust-guidelines/<pk>/upload-pdf/
+        Expecting multipart/form-data with 'pdf_file'.
+        """
+        try:
+            guideline = TrustGuideline.objects.get(pk=pk)
+            logger.debug(f"Found TrustGuideline ID {pk} for PDF upload.")
+        except TrustGuideline.DoesNotExist:
+            logger.warning(f"TrustGuideline ID {pk} not found.")
+            return Response(
+                {"detail": "Guideline not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = UploadPDFSerializer(data=request.data)
+        if serializer.is_valid():
+            updated_guideline = serializer.update(guideline, serializer.validated_data)
+            return Response(
+                {
+                    "id": updated_guideline.id,
+                    "name": updated_guideline.name,
+                    "external_url": updated_guideline.external_url,
+                    "version_number": updated_guideline.version_number,
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            logger.error(f"UploadPDFSerializer validation failed: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TrustGuidelineUpdateAPIView(generics.UpdateAPIView):
     """
     API endpoint that allows updating an existing TrustGuideline.
@@ -111,6 +144,24 @@ class TrustGuidelineAllAPIView(APIView):
         guidelines = TrustGuideline.objects.all().order_by('-viewcount')
         serializer = TrustGuidelineSerializer(guidelines, many=True)
         return Response(serializer.data)
+
+
+class TrustGuidelineCreateAPIView(generics.CreateAPIView):
+    """API endpoint that allows creating a new TrustGuideline."""
+    queryset = TrustGuideline.objects.all()
+    serializer_class = TrustGuidelineSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        try:
+            # Attempt to retrieve the Trust with id=2
+            trust = Trust.objects.get(id=2)
+        except Trust.DoesNotExist:
+            raise ValidationError("Default trust (id=2) does not exist in the system.")
+        
+        # Save the TrustGuideline with the specified trust
+        serializer.save(trust=trust)
 
 
 class TrustGuidelineViewSet(viewsets.ModelViewSet):
