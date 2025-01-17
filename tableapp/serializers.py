@@ -8,9 +8,25 @@ class TrustSerializer(serializers.ModelSerializer):
         model = Trust
         fields = ['id', 'name']  # Include other Trust fields if necessary
 
+
+class TrustGuidelineMinimalSerializer(serializers.ModelSerializer):
+    # trust = TrustSerializer(read_only=True)
+
+    class Meta:
+        model = TrustGuideline
+        fields = [
+            'id',
+            # 'trust',
+            'name',
+            'external_url',
+            'description',
+
+        ]
+
+
 class TrustGuidelineSerializer(serializers.ModelSerializer):
     trust = TrustSerializer(read_only=True)
-    pdf_file_url = serializers.SerializerMethodField()
+    # pdf_file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = TrustGuideline
@@ -29,13 +45,7 @@ class TrustGuidelineSerializer(serializers.ModelSerializer):
             'authors',
             'creation_date',
             'review_date',
-            'pdf_file',
-            'pdf_file_url',
+            # 'pdf_file',
+            # 'pdf_file_url',
         ]
         read_only_fields = ['viewcount']  # If viewcount is managed server-side
-
-    def get_pdf_file_url(self, obj):
-        request = self.context.get('request')
-        if obj.pdf_file and hasattr(obj.pdf_file, 'url'):
-            return request.build_absolute_uri(obj.pdf_file.url)
-        return None
