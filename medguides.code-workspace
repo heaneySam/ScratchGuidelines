@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../flutter_guidelines"
+		},
+		{
+			"path": "../medguidesNEXT"
+		}
+	],
+	"settings": {}
+}
