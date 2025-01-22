@@ -145,7 +145,9 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'x-api-key',  # Your custom header
+    'x-api-key',
+    'cache-control',
+    'pragma'
 ]
 
 
