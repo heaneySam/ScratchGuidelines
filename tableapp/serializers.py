@@ -36,7 +36,8 @@ class TrustGuidelineMinimalSerializer(serializers.ModelSerializer):
             'name',
             'external_url',
             'description',
-
+            'viewcount',
+            'medical_speciality',
         ]
 
 
