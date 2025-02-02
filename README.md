@@ -1,5 +1,5 @@
 # USEFUL COMMANDS
-python manage.py migrate
+python manage.py migrate (sometimes use python3 instead of python)
 
 python manage.py makemigrations
 
