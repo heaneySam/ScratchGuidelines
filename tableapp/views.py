@@ -27,7 +27,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import TrustGuideline
-from .serializers import TrustGuidelineSerializer, TrustGuidelineMinimalSerializer, UploadPDFSerializer
+from .serializers import TrustGuidelineSerializer, TrustGuidelineMinimalSerializer, UploadPDFSerializer, TrustGuidelineAdminSerializer
 from django.conf import settings
 import boto3
 from botocore.exceptions import ClientError
@@ -78,6 +78,16 @@ class TrustGuidelineAllMinimalAPIView(generics.ListAPIView):
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
     pagination_class = None  # Disable pagination for this view
+
+class TrustGuidelineAllAdminAPIView(generics.ListAPIView):
+    """API endpoint that returns all TrustGuidelines with minimal fields."""
+    queryset = TrustGuideline.objects.all().order_by('-review_date')
+    serializer_class = TrustGuidelineAdminSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    pagination_class = None  # Disable pagination for this view
+
+
 
 class TrustGuidelineRetrieveAPIView(generics.RetrieveAPIView):
     """

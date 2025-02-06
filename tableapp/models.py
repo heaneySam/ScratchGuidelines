@@ -37,7 +37,7 @@ class TrustGuideline(models.Model):
     authors = models.CharField(max_length=1025, blank=True, null=True)  # New field for authors
     creation_date = models.CharField(max_length=255, blank=True, null=True)  # New field for creation date
     review_date = models.CharField(max_length=255, blank=True, null=True)  # New field for review date
-
+    last_updated_date = models.CharField(max_length=255, blank=True, null=True)  # New field for last updated date
     # pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)
 
     def __str__(self):

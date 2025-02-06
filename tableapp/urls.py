@@ -33,4 +33,6 @@ urlpatterns = [
     path('api/trust-guidelines/<int:pk>/update/', views.TrustGuidelineUpdateAPIView.as_view(), name='trust_guideline_update'),
     path('api/trust-guidelines/<int:pk>/upload-pdf/', TrustGuidelineUploadPDFView.as_view(), name='trust_guideline_upload_pdf'),
     path('api/trust-guidelines/create/', views.TrustGuidelineCreateAPIView.as_view(), name='trust_guideline_create'),
+    path('api/trust-guidelines/all-admin/', views.TrustGuidelineAllAdminAPIView.as_view(), name='trust_guideline_all_admin'),
+
 ]

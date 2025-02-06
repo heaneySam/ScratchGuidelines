@@ -40,6 +40,23 @@ class TrustGuidelineMinimalSerializer(serializers.ModelSerializer):
             'medical_speciality',
         ]
 
+class TrustGuidelineAdminSerializer(serializers.ModelSerializer):
+    # trust = TrustSerializer(read_only=True)
+
+    class Meta:
+        model = TrustGuideline
+        fields = [
+            'id',
+            # 'trust',
+            'name',
+            'description',
+            'medical_speciality',
+            'external_url',
+            'review_date',
+            'last_updated_date',
+        ]
+
+
 
 class TrustGuidelineSerializer(serializers.ModelSerializer):
     trust = TrustSerializer(read_only=True)
