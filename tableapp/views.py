@@ -5,6 +5,7 @@ from django.views import View
 from django_tables2 import RequestConfig, SingleTableView, SingleTableMixin
 from django_filters.views import FilterView
 from django_tables2 import RequestConfig, SingleTableView
+from rest_framework.exceptions import ValidationError
 
 from .authentication import APIKeyAuthentication
 from .models import CustomGuidelines, TrustGuideline, FavouriteGuideline, Trust
@@ -72,22 +73,44 @@ class TrustGuidelineListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 class TrustGuidelineAllMinimalAPIView(generics.ListAPIView):
-    """API endpoint that returns all TrustGuidelines with minimal fields."""
-    queryset = TrustGuideline.objects.all().order_by('-viewcount')
+    """API endpoint that returns all TrustGuidelines with minimal fields.
+    Filters by trust name if provided in query params, defaults to UHD (ID 2) if no trust is specified."""
     serializer_class = TrustGuidelineMinimalSerializer
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
     pagination_class = None  # Disable pagination for this view
 
+    def get_queryset(self):
+        queryset = TrustGuideline.objects.all().order_by('-viewcount')
+        trust_name = self.request.query_params.get('trust', 'UHD')
+        
+        # Get the Trust object by name, default to UHD if not found
+        try:
+            trust = Trust.objects.get(name=trust_name)
+        except Trust.DoesNotExist:
+            trust = Trust.objects.get(id=2)  # Default to UHD (ID 2)
+        
+        return queryset.filter(trust=trust)
+
 class TrustGuidelineAllAdminAPIView(generics.ListAPIView):
-    """API endpoint that returns all TrustGuidelines with minimal fields."""
-    queryset = TrustGuideline.objects.all().order_by('-review_date')
+    """API endpoint that returns all TrustGuidelines with admin fields.
+    Filters by trust name if provided in query params, defaults to UHD (ID 2) if no trust is specified."""
     serializer_class = TrustGuidelineAdminSerializer
     authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
     pagination_class = None  # Disable pagination for this view
 
-
+    def get_queryset(self):
+        queryset = TrustGuideline.objects.all().order_by('-review_date')
+        trust_name = self.request.query_params.get('trust', 'UHD')
+        
+        # Get the Trust object by name, default to UHD if not found
+        try:
+            trust = Trust.objects.get(name=trust_name)
+        except Trust.DoesNotExist:
+            trust = Trust.objects.get(id=2)  # Default to UHD (ID 2)
+        
+        return queryset.filter(trust=trust)
 
 class TrustGuidelineRetrieveAPIView(generics.RetrieveAPIView):
     """
@@ -164,13 +187,12 @@ class TrustGuidelineCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
+        trust_name = self.request.query_params.get('trust', 'UHD')
         try:
-            # Attempt to retrieve the Trust with id=2
-            trust = Trust.objects.get(id=2)
+            trust = Trust.objects.get(name=trust_name)
         except Trust.DoesNotExist:
-            raise ValidationError("Default trust (id=2) does not exist in the system.")
+            raise ValidationError(f"Trust '{trust_name}' does not exist in the system.")
         
-        # Save the TrustGuideline with the specified trust
         serializer.save(trust=trust)
 
 
@@ -211,6 +233,22 @@ class TrustGuidelineViewSet(viewsets.ModelViewSet):
         # # Save the new PDF (this will upload it to S3 via the FileField)
         # serializer.save()
         # logger.debug(f"Updated TrustGuideline ID {instance.id} with new PDF.")
+
+
+from rest_framework import serializers
+
+class TrustSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trust
+        fields = ['id', 'name']
+
+class TrustListAPIView(generics.ListAPIView):
+    """API endpoint that returns all Trusts."""
+    queryset = Trust.objects.all().order_by('name')
+    serializer_class = TrustSerializer
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    pagination_class = None  # Disable pagination for this view
 
 
 @login_required

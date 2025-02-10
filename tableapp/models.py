@@ -26,19 +26,18 @@ class Trust(models.Model):
 class TrustGuideline(models.Model):
     trust = models.ForeignKey(Trust, on_delete=models.CASCADE)
     name = models.CharField(max_length=1025)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     external_url = models.URLField(max_length=1025, blank=True, null=True)
-    metadata = models.TextField(default='General')
-    medical_speciality = models.CharField(max_length=255, default='General')
-    locality = models.CharField(max_length=255, default='UHD')
-    original_filename = models.CharField(max_length=1025, default='null')
-    viewcount = models.IntegerField(default=0, db_index=True)  # New field to track views
-    version_number = models.CharField(max_length=255, default='0', db_index=True)  # Changed to CharField
-    authors = models.CharField(max_length=1025, blank=True, null=True)  # New field for authors
-    creation_date = models.CharField(max_length=255, blank=True, null=True)  # New field for creation date
-    review_date = models.CharField(max_length=255, blank=True, null=True)  # New field for review date
-    last_updated_date = models.CharField(max_length=255, blank=True, null=True)  # New field for last updated date
-    # pdf_file = models.FileField(upload_to='pdfs/', blank=True, null=True)
+    metadata = models.TextField(blank=True, null=True)
+    medical_speciality = models.CharField(max_length=255, blank=True, null=True)
+    locality = models.CharField(max_length=255, blank=True, null=True)
+    original_filename = models.CharField(max_length=1025, blank=True, null=True)
+    viewcount = models.IntegerField(default=0, db_index=True)  # Keeping this default as it's a counter
+    version_number = models.CharField(max_length=255, blank=True, null=True)
+    authors = models.CharField(max_length=1025, blank=True, null=True)
+    creation_date = models.CharField(max_length=255, blank=True, null=True)
+    review_date = models.CharField(max_length=255, blank=True, null=True)
+    last_updated_date = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name

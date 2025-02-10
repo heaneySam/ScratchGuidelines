@@ -79,10 +79,21 @@ class TrustGuidelineSerializer(serializers.ModelSerializer):
             'authors',
             'creation_date',
             'review_date',
-            # 'pdf_file',
-            # 'pdf_file_url',
         ]
-        read_only_fields = ['viewcount']  # If viewcount is managed server-side
+        read_only_fields = ['viewcount']
+        extra_kwargs = {
+            'description': {'required': False},
+            'external_url': {'required': False},
+            'metadata': {'required': False},
+            'medical_speciality': {'required': False},
+            'locality': {'required': False},
+            'original_filename': {'required': False},
+            'version_number': {'required': False},
+            'authors': {'required': False},
+            'creation_date': {'required': False},
+            'review_date': {'required': False},
+        }
+
 
 class UploadPDFSerializer(serializers.Serializer):
     """
@@ -157,4 +168,3 @@ class UploadPDFSerializer(serializers.Serializer):
         instance.save()
         logger.debug(f"Updated TrustGuideline ID {instance.id} with new external_url")
         return instance
-
